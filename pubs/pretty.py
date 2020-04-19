@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 import os
 import re
+import textwrap
 
 from . import color
 from .bibstruct import TYPE_KEY
@@ -33,22 +34,43 @@ def short_authors(bibdata):
     except KeyError:  # When no author is defined
         return ''
 
+def wrap_text(string, compress=True):
+    with os.popen('stty size', 'r') as win:
+        rows, columns = win.read().split()
+    
+    maxwidth = int(0.9 * int(columns))
+    if compress:
+        lst = textwrap.wrap(string, maxwidth)
+        if len(lst) == 1:
+            return ' '.join(lst)
+        else:
+            return lst[0] + '...'
+
+    else:
+        return '\n   '.join(textwrap.wrap(string, maxwidth))
+
 
 def bib_oneliner(bibdata):
-    authors = short_authors(bibdata)
+    authors = sanitize(short_authors(bibdata))
     journal = ''
     if 'journal' in bibdata:
         journal = ' ' + bibdata['journal']
+    elif bibdata[TYPE_KEY] == 'book':
+        journal = ' ' + bibdata.get('publisher', '')
     elif bibdata[TYPE_KEY] == 'inproceedings':
         journal = ' ' + bibdata.get('booktitle', '')
 
-    return sanitize('{authors} \"{title}\"{journal}{year}'.format(
+    title = wrap_text(sanitize(bibdata.get('title', '')), compress=True)
+    journal = wrap_text(sanitize(journal), compress=True)
+
+    string = '{authors}{year}\n  \"{title}\"\n  {journal}'.format(
         authors=color.dye_out(authors, 'author'),
-        title=color.dye_out(bibdata.get('title', ''), 'title'),
+        title=color.dye_out(title, 'title'),
         journal=color.dye_out(journal, 'publisher'),
         year=' ({})'.format(color.dye_out(bibdata['year'], 'year'))
-             if 'year' in bibdata else ''
-    ))
+             if 'year' in bibdata else '')
+
+    return string
 
 
 def bib_desc(bib_data):
@@ -74,6 +96,8 @@ def paper_oneliner(p, citekey_only=False):
                 'tag')
         tags = '' if len(p.tags) == 0 else '| {}'.format(
             ','.join(color.dye_out(t, 'tag') for t in sorted(p.tags)))
-        return '[{citekey}] {descr}{doc} {tags}'.format(
+        return '[{citekey}] {descr}\n  {doc} {tags}\n'.format(
             citekey=color.dye_out(p.citekey, 'citekey'),
             descr=bibdesc, tags=tags, doc=doc_str)
+
+

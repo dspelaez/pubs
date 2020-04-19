@@ -17,6 +17,14 @@ is supposed to do: help us do science, so now we are mostly doing that.
 **Notice:** pubs is relatively stable but comes with no warranty; do keep backups of your data.
 **Notice:** pubs currently works with Python 2.7, but support will be dropped as soon as maintaining it becomes tedious.
 
+## Comments on this fork
+
+This is fork is for my personal use and the only change with regard the original
+is a little improvement in the list command, here a screenshot:
+
+![screen](./extra/screenshot.png)
+
+
 ## Installation
 
 You can install the latest stable version of `pubs` through Pypi, with:

@@ -19,8 +19,8 @@ is supposed to do: help us do science, so now we are mostly doing that.
 
 ## Comments on this fork
 
-This is fork is for my personal use and the only change with regard the original
-is a little improvement in the list command, here a screenshot:
+I adapted this fork for my personal use. The only change with regard the original
+is the way the items are displayed on the screen, here a screenshot:
 
 ![screen](./extra/screenshot.png)
 
